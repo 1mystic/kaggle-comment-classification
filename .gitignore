@@ -1,0 +1,33 @@
+# Data
+data/
+*.csv
+*.parquet
+*.json.gz
+
+# Model artifacts
+*.pkl
+*.joblib
+*.model
+*.txt.model
+models/
+checkpoints/
+
+# Notebooks (keep the private original out of the public repo)
+Notebook-main.ipynb
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
