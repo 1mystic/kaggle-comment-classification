@@ -2,7 +2,7 @@
 
 Multi-class comment-toxicity classification on a severely imbalanced, obfuscated text dataset: **0.835 macro F1** (rank 21 of 2,744 participants) using a stacked ensemble of gradient-boosted trees and linear/Bayesian text models, no deep learning.
 
-- **Competition:** [Comment Category Prediction Challenge](https://www.kaggle.com/competitions/comment-category-prediction-challenge/overview) (Kaggle, private community competition)
+- **Competition:** [Comment Category Prediction Challenge](https://www.kaggle.com/competitions/comment-category-prediction-challenge/overview) (Kaggle, private community competition for IIT Madras students)
 - **Result:** Rank **21 / 2,744** participants (3,154 entrants), top **0.8%**, score **0.83499** (macro-F1-based custom metric)
 - **Stack:** scikit-learn (Logistic Regression, LinearSVC, ComplementNB), LightGBM, engineered features, no deep learning involved
 
@@ -105,7 +105,7 @@ Class 3 (severe/violent, ~2.8% of data) was the consistent bottleneck across eve
 
 ## Reproducibility Note
 
-This repo does not include competition data or the private notebook (see below). The `src/` skeleton illustrates the pipeline structure (cleaning → feature engineering → TF-IDF → stacked ensemble) but is a **simplified, independently rewritten reference implementation**, not a drop-in reproduction. To reproduce meaningfully you would need:
+This repo does not include competition data or the notebook I actually submitted (see below). The `src/` skeleton illustrates the pipeline structure (cleaning → feature engineering → TF-IDF → stacked ensemble) but is a **simplified, independently rewritten reference implementation**, not a drop-in reproduction. To reproduce meaningfully you would need:
 - The original `train.csv`/`test.csv` (not published here; see Kaggle competition page, which may no longer be publicly accessible since this was a private competition)
 - The full hand-tuned hyperparameter grids (only final chosen values are illustrated in `src/train.py`)
 - The exact per-class threshold multipliers, which were fit once via Nelder-Mead on this specific dataset and would not transfer directly to another
@@ -116,6 +116,7 @@ This was a **private, competition-only Kaggle notebook** (course-hosted communit
 
 - An honest description of the methodology actually used (above), reconstructed directly from my own notebook
 - An **independently rewritten**, simplified illustrative version of the pipeline in `src/`, containing no competition data and no verbatim competition code
+- [`Notebook-main.ipynb`](Notebook-main.ipynb): a reconstructed copy of my approach, written after the fact. This is not the notebook I actually submitted to the competition, but a recreated version of it
 - Leaderboard/result screenshots as evidence of the outcome, not the process
 
 If you're evaluating this for a role: happy to walk through the actual approach, design decisions, and trade-offs in a call; I just can't hand over the original notebook file itself.

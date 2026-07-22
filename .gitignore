@@ -12,8 +12,7 @@ data/
 models/
 checkpoints/
 
-# Notebooks (keep the private original out of the public repo)
-Notebook-main.ipynb
+# Notebooks
 .ipynb_checkpoints/
 
 # Python
