@@ -119,10 +119,23 @@ This was a **private, competition-only Kaggle notebook** (course-hosted communit
 - [`Notebook-main.ipynb`](Notebook-main.ipynb): a reconstructed copy of my approach, written after the fact. This is not the notebook I actually submitted to the competition, but a recreated version of it
 - Leaderboard/result screenshots as evidence of the outcome, not the process
 
-If you're evaluating this for a role: happy to walk through the actual approach, design decisions, and trade-offs in a call; I just can't hand over the original notebook file itself.
+## Deployment & Interactive Web UI Dashboard
+
+- **Production Training Notebook:** [`deployment_training_template.ipynb`](deployment_training_template.ipynb)
+  Streamlined Kaggle notebook containing the exact 7-model stacked ensemble pipeline, feature engineering, vectorization, meta-learner, and threshold multipliers. When executed on Kaggle, it exports all fitted models to a compressed `comment_classifier_pipeline.joblib` artifact.
+- **Hugging Face Space Web App:** [`app/app.py`](app/app.py)
+  Interactive real-time Comment Toxicity & Category Intelligence Dashboard built with Gradio. Features live classification, class probability progress gauges, linguistic token signals (leet-speak decodings, violent/negative lexicons), sentiment balance scores, and test sample presets.
+
+```bash
+# Run Web UI locally
+cd app
+pip install -r requirements.txt
+python app.py
+```
 
 ## Stack
 
-`numpy` · `pandas` · `scikit-learn` · `xgboost` · `lightgbm`
+`numpy` · `pandas` · `scikit-learn` · `lightgbm` · `joblib` · `gradio`
 
-See [requirements.txt](requirements.txt).
+See [requirements.txt](requirements.txt) and [app/requirements.txt](app/requirements.txt).
+
