@@ -121,10 +121,10 @@ This was a **private, competition-only Kaggle notebook** (course-hosted communit
 
 ## Deployment & Interactive Web UI Dashboard
 
-- **Production Training Notebook:** [`deployment_training_template.ipynb`](deployment_training_template.ipynb)
-  Streamlined Kaggle notebook containing the exact 7-model stacked ensemble pipeline, feature engineering, vectorization, meta-learner, and threshold multipliers. When executed on Kaggle, it exports all fitted models to a compressed `comment_classifier_pipeline.joblib` artifact.
+- **Production Training Notebook:** [`app/deployment_training_fast.ipynb`](app/deployment_training_fast.ipynb)
+  Kaggle notebook containing the exact 7-model stacked ensemble pipeline, feature engineering, vectorization, meta-learner, and threshold multipliers, tuned to fit Kaggle's CPU time limit. Each base learner's `N_FOLDS` cross-validation copies are kept and bagged (averaged) at inference time instead of doing a separate full-data refit. When executed on Kaggle, it exports all fitted fold models to a compressed `comment_classifier_pipeline.joblib` artifact matching the schema `app/app.py` expects.
 - **Hugging Face Space Web App:** [`app/app.py`](app/app.py)
-  Interactive real-time Comment Toxicity & Category Intelligence Dashboard built with Gradio. Features live classification, class probability progress gauges, linguistic token signals (leet-speak decodings, violent/negative lexicons), sentiment balance scores, and test sample presets.
+  Interactive real-time Comment Toxicity & Category Intelligence Dashboard built with Gradio. Features live classification, class probability progress gauges, linguistic token signals (leet-speak decodings, violent/negative lexicons), sentiment balance scores, and test sample presets. Runs in a heuristic "Demonstration Preview Mode" until `comment_classifier_pipeline.joblib` is placed alongside it.
 
 ```bash
 # Run Web UI locally

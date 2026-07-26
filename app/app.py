@@ -219,14 +219,30 @@ MODEL_PATHS = [
     '/kaggle/working/comment_classifier_pipeline.joblib'
 ]
 
+# Keys the real deployment artifact must have (see app/deployment_training_fast.ipynb,
+# section 9 "Export Deployment Artifact"). Each *_models entry is a list of N_FOLDS
+# fitted fold copies of that base learner, bagged (averaged) at inference time.
+REQUIRED_ARTIFACT_KEYS = {
+    'tfidf_word', 'tfidf_char', 'tfidf_phrase', 'ordinal_enc',
+    'numeric_col_names', 'cat_col_names', 'meta_model', 'thresholds',
+    'lgb_models', 'lr_word_models', 'lr_char_models', 'nbsvm_models',
+    'lgb_bin_models', 'lgb_c23_models', 'svc_models',
+}
+
 MODEL_ARTIFACT = None
 MODEL_STATUS_TEXT = ""
 
 for path in MODEL_PATHS:
     if os.path.exists(path):
         try:
-            MODEL_ARTIFACT = joblib.load(path)
-            MODEL_STATUS_TEXT = f"Full Stacked Ensemble Active ({os.path.basename(path)})"
+            candidate = joblib.load(path)
+            missing = REQUIRED_ARTIFACT_KEYS - set(candidate.keys())
+            if missing:
+                print(f"Skipping {path}: artifact missing keys {sorted(missing)}")
+                continue
+            MODEL_ARTIFACT = candidate
+            n_folds = MODEL_ARTIFACT.get('n_folds', len(MODEL_ARTIFACT['lgb_models']))
+            MODEL_STATUS_TEXT = f"Full Stacked Ensemble Active ({os.path.basename(path)}, {n_folds}-fold bagged)"
             print(MODEL_STATUS_TEXT)
             break
         except Exception as e:
@@ -235,6 +251,15 @@ for path in MODEL_PATHS:
 if MODEL_ARTIFACT is None:
     MODEL_STATUS_TEXT = "Demonstration Preview Mode (Upload 'comment_classifier_pipeline.joblib' to activate full ensemble)"
     print(MODEL_STATUS_TEXT)
+
+
+def _bag_predict_proba(models, X):
+    """Average predict_proba across a list of fold-fitted copies of the same base learner."""
+    total = None
+    for m in models:
+        p = m.predict_proba(X)
+        total = p if total is None else total + p
+    return total / len(models)
 
 CLASS_NAMES = {0: 'Normal (C-0)', 1: 'Offensive (C-1)', 2: 'Hate Speech (C-2)', 3: 'Severe/Violent (C-3)'}
 
@@ -282,18 +307,23 @@ def analyze_comment(comment_text, if_1, if_2, upvotes, downvotes, race, religion
         ).astype(np.int32)
         
         X_full = hstack([w_vec, c_vec, p_vec, csr_matrix(num_feats), csr_matrix(cat_feats)]).tocsr()
-        
-        p_lgb = MODEL_ARTIFACT['lgb_model'].predict_proba(X_full)
-        p_lr_w = MODEL_ARTIFACT['lr_word'].predict_proba([clean_str])
-        p_lr_c = MODEL_ARTIFACT['lr_char'].predict_proba([clean_str])
-        p_nbsvm = MODEL_ARTIFACT['nbsvm_model'].predict_proba([clean_str])
-        p_lgb_bin = MODEL_ARTIFACT['lgb_bin_model'].predict_proba(X_full)
-        p_svc = MODEL_ARTIFACT['svc_model'].predict_proba([clean_str])
-        p_c23 = MODEL_ARTIFACT['lgb_c23_model'].predict_proba(X_full)
-        
+        clean_text_input = [clean_str]
+
+        # Bag (average) across the N_FOLDS fitted copies of each base learner, then
+        # concatenate in the exact order the meta-learner was trained on: the two
+        # LGB specialists (lgb_bin, lgb_c23) are BINARY models with 2-column output,
+        # the other five are 4-class (see deployment_training_fast.ipynb, section 9).
+        p_lgb = _bag_predict_proba(MODEL_ARTIFACT['lgb_models'], X_full)
+        p_lr_w = _bag_predict_proba(MODEL_ARTIFACT['lr_word_models'], clean_text_input)
+        p_lr_c = _bag_predict_proba(MODEL_ARTIFACT['lr_char_models'], clean_text_input)
+        p_nbsvm = _bag_predict_proba(MODEL_ARTIFACT['nbsvm_models'], clean_text_input)
+        p_lgb_bin = _bag_predict_proba(MODEL_ARTIFACT['lgb_bin_models'], X_full)
+        p_svc = _bag_predict_proba(MODEL_ARTIFACT['svc_models'], clean_text_input)
+        p_c23 = _bag_predict_proba(MODEL_ARTIFACT['lgb_c23_models'], X_full)
+
         stacked = np.hstack([p_lgb, p_lr_w, p_lr_c, p_nbsvm, p_lgb_bin, p_svc, p_c23]).astype(np.float32)
         meta_probs = MODEL_ARTIFACT['meta_model'].predict_proba(stacked)[0]
-        
+
         mults = MODEL_ARTIFACT.get('thresholds', [1.032, 0.951, 0.85, 1.25])
         for i in range(4):
             meta_probs[i] *= mults[i]
