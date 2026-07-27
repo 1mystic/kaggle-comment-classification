@@ -12,6 +12,8 @@
   --risk-high: #dc2626;
   --radius: 14px;
   --shadow: 0 1px 2px rgba(20, 20, 43, 0.04), 0 8px 24px rgba(20, 20, 43, 0.05);
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
@@ -20,7 +22,15 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-display);
+}
+
+/* Data/numeric elements read better in a monospace face — tabular alignment,
+   clearly distinct from prose, standard pattern for dashboard metrics. */
+.hero-label, .stat-value, .stat-value-lg, .badge, .citation-badge,
+.field-value, .source-tag, .prob-row, .dist-label, .recent-row .meta,
+#if1Val, #if2Val {
+  font-family: var(--font-mono);
 }
 
 /* Top nav */
@@ -209,6 +219,16 @@ input[type="range"] { width: 100%; }
 }
 .btn-secondary:hover { background: var(--accent-soft); }
 .appeal-result { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+.override-note {
+  font-size: 12px;
+  color: var(--risk-moderate);
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  line-height: 1.5;
+}
 
 /* Audit Log view */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 4px; }

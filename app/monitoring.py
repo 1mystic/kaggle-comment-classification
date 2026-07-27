@@ -1,4 +1,4 @@
-"""Model health / drift monitoring — proxy signals, not a live F1 score.
+"""Model health / drift monitoring - proxy signals, not a live F1 score.
 
 Important honesty note: there is no ground truth for live traffic (nobody
 confirms whether a prediction was actually correct), so a real live F1/recall
@@ -7,7 +7,7 @@ log in audit.py:
 
   - Class-distribution drift: how far the live predicted-label mix has moved
     from the known validation-set baseline (documented in the root README),
-    measured via Population Stability Index (PSI) — a standard MLOps drift
+    measured via Population Stability Index (PSI) - a standard MLOps drift
     metric, industry-conventional thresholds below.
   - Average prediction confidence over logged decisions.
   - Appeal rate: the fraction of original decisions that got appealed, a weak
@@ -78,7 +78,7 @@ def get_model_health() -> dict:
         "appeal_rate": round(_appeal_rate(), 2),
         "sample_size": stats["total_decisions"],
         "disclaimer": (
-            "Proxy signals only — no ground-truth labels exist for live traffic, "
+            "Proxy signals only - no ground-truth labels exist for live traffic, "
             "so this is distributional drift + confidence + appeal-rate monitoring, "
             "not a live F1/accuracy measurement."
         ),

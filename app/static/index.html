@@ -4,6 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Comment Trust &amp; Safety Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
@@ -95,7 +99,7 @@
         <!-- Results column -->
         <div class="results-col">
           <div class="card hero-card" id="heroCard">
-            <div class="hero-label" id="heroLabel">—</div>
+            <div class="hero-label" id="heroLabel">-</div>
             <div class="hero-confidence" id="heroConfidence">Submit a comment to analyze</div>
             <span class="badge" id="riskBadge">Awaiting input</span>
           </div>
@@ -108,8 +112,8 @@
           <div class="card">
             <h2 class="card-title">Linguistic &amp; vocabulary signals</h2>
             <div class="row">
-              <div class="stat"><span class="stat-label">Sentiment score</span><span class="stat-value" id="sentimentVal">—</span></div>
-              <div class="stat"><span class="stat-label">Capitalisation ratio</span><span class="stat-value" id="capsVal">—</span></div>
+              <div class="stat"><span class="stat-label">Sentiment score</span><span class="stat-value" id="sentimentVal">-</span></div>
+              <div class="stat"><span class="stat-label">Capitalisation ratio</span><span class="stat-value" id="capsVal">-</span></div>
             </div>
             <div id="termsOut" class="terms-out">No terms detected yet.</div>
           </div>
@@ -124,6 +128,7 @@
           <div class="card" id="agentCard" style="display:none;">
             <h2 class="card-title">Agent decision</h2>
             <span class="badge" id="agentStatusBadge"></span>
+            <div id="overrideNote" class="override-note" style="display:none;"></div>
             <div class="appeal-row">
               <input id="appealReason" type="text" placeholder="Reason for appeal (e.g. 'context was sarcasm')" />
               <button id="appealBtn" class="btn-secondary">Appeal this decision</button>
@@ -139,30 +144,30 @@
       <div class="stat-row">
         <div class="card stat-card">
           <span class="stat-label">Total decisions</span>
-          <span class="stat-value-lg" id="statTotal">—</span>
+          <span class="stat-value-lg" id="statTotal">-</span>
         </div>
         <div class="card stat-card">
           <span class="stat-label">Auto-actioned</span>
-          <span class="stat-value-lg" id="statAutoActioned">—</span>
+          <span class="stat-value-lg" id="statAutoActioned">-</span>
         </div>
         <div class="card stat-card">
           <span class="stat-label">Avg. confidence</span>
-          <span class="stat-value-lg" id="statAvgConfidence">—</span>
+          <span class="stat-value-lg" id="statAvgConfidence">-</span>
         </div>
       </div>
 
       <div class="card">
         <h2 class="card-title">Model health &amp; drift monitoring</h2>
-        <p class="disclaimer">Proxy signals only — there's no ground truth for live traffic, so this tracks distributional drift, confidence, and appeal rate, not a real live F1/accuracy score.</p>
+        <p class="disclaimer">Proxy signals only - there's no ground truth for live traffic, so this tracks distributional drift, confidence, and appeal rate, not a real live F1/accuracy score.</p>
         <div class="row">
           <div class="stat">
             <span class="stat-label">Drift status (PSI)</span>
-            <span class="badge" id="driftBadge">—</span>
+            <span class="badge" id="driftBadge">-</span>
           </div>
-          <div class="stat"><span class="stat-label">Avg. confidence</span><span class="stat-value" id="healthAvgConf">—</span></div>
-          <div class="stat"><span class="stat-label">Appeal rate</span><span class="stat-value" id="healthAppealRate">—</span></div>
+          <div class="stat"><span class="stat-label">Avg. confidence</span><span class="stat-value" id="healthAvgConf">-</span></div>
+          <div class="stat"><span class="stat-label">Appeal rate</span><span class="stat-value" id="healthAppealRate">-</span></div>
         </div>
-        <div class="card-title" style="margin-top:16px;">Predicted-class distribution — live vs. validation baseline</div>
+        <div class="card-title" style="margin-top:16px;">Predicted-class distribution - live vs. validation baseline</div>
         <div id="distBars" class="prob-bars"></div>
       </div>
 
@@ -173,7 +178,7 @@
 
       <div class="card">
         <h2 class="card-title">Recent decisions</h2>
-        <div id="recentList" class="recent-list"><p class="muted">No decisions logged yet — analyze a comment to populate this log.</p></div>
+        <div id="recentList" class="recent-list"><p class="muted">No decisions logged yet - analyze a comment to populate this log.</p></div>
       </div>
     </section>
   </main>

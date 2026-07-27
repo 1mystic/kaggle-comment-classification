@@ -2,7 +2,7 @@
 comment and generate a human-readable, policy-cited explanation.
 
 Retrieval is TF-IDF (scikit-learn, already a dependency) over a small local
-policy corpus — deliberately not a neural embedding model, to stay inside
+policy corpus - deliberately not a neural embedding model, to stay inside
 Render's 512MB memory budget alongside the classifier.
 
 Explanation generation calls the Anthropic API (claude-opus-5) when
@@ -46,7 +46,7 @@ def _load_chunks():
                 continue
             heading, _, body = section.partition("\n")
             heading = heading.lstrip("# ").strip()
-            citation = f"{doc_title} — {heading}"
+            citation = f"{doc_title} - {heading}"
             chunks.append({"citation": citation, "text": body.strip()})
     return chunks
 
@@ -110,7 +110,7 @@ def _llm_explanation(comment_text: str, prediction: dict, clause: dict) -> str |
                     f"({prediction['confidence'] * 100:.1f}% confidence)\n"
                     f"Detected signals: violence_terms={prediction['violence_terms']}, "
                     f"negative_terms={prediction['negative_terms']}\n"
-                    f"Relevant policy clause — {clause['citation']}:\n{clause['text']}\n\n"
+                    f"Relevant policy clause - {clause['citation']}:\n{clause['text']}\n\n"
                     "Write the explanation shown to the user who posted this comment."
                 ),
             }],

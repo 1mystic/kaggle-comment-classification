@@ -103,7 +103,7 @@ function renderResult(result) {
   const badge = el("riskBadge");
   badge.className = "badge risk-" + result.risk_level;
   badge.textContent =
-    result.risk_level === "high" ? "High risk — action required" :
+    result.risk_level === "high" ? "High risk - action required" :
     result.risk_level === "moderate" ? "Moderate risk" : "Low risk / safe";
 
   renderProbBars(result.confidences);
@@ -115,7 +115,7 @@ function renderResult(result) {
   if (result.violence_terms.length) terms.push(`<strong>Violent terms:</strong> ${result.violence_terms.join(", ")}`);
   if (result.negative_terms.length) terms.push(`<strong>Negative terms:</strong> ${result.negative_terms.join(", ")}`);
   if (result.positive_terms.length) terms.push(`<strong>Positive terms:</strong> ${result.positive_terms.join(", ")}`);
-  el("termsOut").innerHTML = terms.length ? terms.join("<br>") : "Standard vocabulary — no flagged terms.";
+  el("termsOut").innerHTML = terms.length ? terms.join("<br>") : "Standard vocabulary - no flagged terms.";
 
   if (result.explanation) {
     el("explanationCard").style.display = "block";
@@ -133,6 +133,14 @@ function renderResult(result) {
     badge.textContent = result.agent.agent_status_label;
     el("appealReason").value = "";
     el("appealResult").textContent = "";
+
+    const overrideEl = el("overrideNote");
+    if (result.agent.override_reason) {
+      overrideEl.style.display = "block";
+      overrideEl.textContent = "⚠ " + result.agent.override_reason;
+    } else {
+      overrideEl.style.display = "none";
+    }
   }
 }
 
@@ -189,7 +197,7 @@ function renderHeatmap(heatmapData) {
       const count = counts[`${day}-${hour}`] || 0;
       const cell = document.createElement("div");
       cell.className = "heatmap-cell";
-      cell.title = `${DAY_NAMES[day]} ${hour}:00 — ${count} decision(s)`;
+      cell.title = `${DAY_NAMES[day]} ${hour}:00 - ${count} decision(s)`;
       if (count > 0) {
         const intensity = Math.min(1, count / maxCount);
         cell.style.background = `rgba(79, 70, 229, ${0.15 + intensity * 0.7})`;
@@ -203,7 +211,7 @@ function renderHeatmap(heatmapData) {
 function renderRecentList(recent) {
   const container = el("recentList");
   if (!recent.length) {
-    container.innerHTML = '<p class="muted">No decisions logged yet — analyze a comment to populate this log.</p>';
+    container.innerHTML = '<p class="muted">No decisions logged yet - analyze a comment to populate this log.</p>';
     return;
   }
   container.innerHTML = "";
@@ -223,7 +231,7 @@ function renderRecentList(recent) {
 
 const DRIFT_LABELS = {
   healthy: "Healthy",
-  watch: "Watch — moderate drift",
+  watch: "Watch - moderate drift",
   drift_detected: "Drift detected",
   insufficient_data: "Insufficient data",
 };

@@ -1,6 +1,6 @@
 """Inference engine: text cleaning, feature engineering, and model loading/prediction.
 
-Lifted directly from the working Gradio app (app/app.py) — same logic, same
+Lifted directly from the working Gradio app (app/app.py) - same logic, same
 artifact-loading contract, just without any Gradio dependency so it can be
 imported by the FastAPI server (main.py) and, going forward, anything else.
 """

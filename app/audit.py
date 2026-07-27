@@ -1,6 +1,6 @@
 """SQLite audit trail: every moderation decision, logged for compliance reporting.
 
-Uses the stdlib sqlite3 module — zero new dependency, and light enough for
+Uses the stdlib sqlite3 module - zero new dependency, and light enough for
 Render's memory budget. Disclosed limitation: Render's free-tier disk is
 ephemeral, so this resets on redeploy/restart. Fine for a demo; not a claim
 of production data retention.
