@@ -1,0 +1,187 @@
+:root {
+  --bg: #faf9f5;
+  --card: #ffffff;
+  --border: #eae7de;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --accent: #4f46e5;
+  --accent-soft: #eef0fd;
+  --accent-2: #f59e0b;
+  --risk-low: #16a34a;
+  --risk-moderate: #d97706;
+  --risk-high: #dc2626;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(20, 20, 43, 0.04), 0 8px 24px rgba(20, 20, 43, 0.05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Top nav */
+.topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topnav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 16px;
+}
+.topnav-tabs { display: flex; gap: 6px; background: var(--bg); padding: 4px; border-radius: 10px; }
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.tab-btn.is-active { background: var(--card); color: var(--text); box-shadow: var(--shadow); }
+
+.pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.pill-muted { background: var(--accent-soft); color: var(--accent); }
+.pill-active { background: #dcfce7; color: #15803d; }
+.pill-demo { background: #fef3c7; color: #b45309; }
+
+/* Layout */
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 28px 60px; }
+.view { display: none; }
+.view.is-active { display: block; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1.1fr; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 14px;
+}
+
+/* Form */
+.field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+textarea, input[type="number"], select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+}
+textarea:focus, input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+input[type="range"] { width: 100%; }
+.row { display: flex; gap: 14px; margin: 12px 0; flex-wrap: wrap; }
+.field { flex: 1; min-width: 120px; }
+.field-value { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.advanced { margin: 14px 0; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; background: var(--bg); }
+.advanced summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 6px;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+}
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+.preset-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin: 18px 0 8px; }
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-preset {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+}
+.btn-preset:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Results */
+.results-col { display: flex; flex-direction: column; }
+.hero-card { text-align: center; padding: 28px 20px; }
+.hero-label { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+.hero-confidence { color: var(--text-muted); font-size: 13px; margin: 6px 0 14px; }
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.badge.risk-low { background: #dcfce7; color: var(--risk-low); }
+.badge.risk-moderate { background: #fef3c7; color: var(--risk-moderate); }
+.badge.risk-high { background: #fee2e2; color: var(--risk-high); }
+
+.prob-bars { display: flex; flex-direction: column; gap: 10px; }
+.prob-row { display: grid; grid-template-columns: 110px 1fr 48px; align-items: center; gap: 10px; font-size: 12px; }
+.prob-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; }
+.prob-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+.prob-fill.risk-high { background: linear-gradient(90deg, #ef4444, #dc2626); }
+.prob-fill.risk-moderate { background: linear-gradient(90deg, #f59e0b, #d97706); }
+.prob-fill.risk-low { background: linear-gradient(90deg, #22c55e, #16a34a); }
+
+.stat { flex: 1; }
+.stat-label { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; }
+.stat-value { display: block; font-size: 18px; font-weight: 700; margin-top: 2px; }
+
+.terms-out { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
+.muted { color: var(--text-muted); }
+
+/* Policy explanation card */
+.citation-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.explanation-text { font-size: 14px; line-height: 1.6; color: var(--text); margin: 0 0 8px; }
+.source-tag { font-size: 11px; color: var(--text-muted); font-style: italic; }

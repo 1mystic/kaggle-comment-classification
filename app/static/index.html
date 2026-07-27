@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Comment Trust &amp; Safety Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <header class="topnav">
+    <div class="topnav-brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Trust &amp; Safety</span>
+    </div>
+    <nav class="topnav-tabs">
+      <button class="tab-btn is-active" data-view="moderate">Moderate</button>
+      <button class="tab-btn" data-view="audit">Audit Log</button>
+    </nav>
+    <div class="topnav-status">
+      <span id="modelStatusPill" class="pill pill-muted">Checking model…</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- ===================== Moderate view ===================== -->
+    <section id="view-moderate" class="view is-active">
+      <div class="grid-2">
+        <!-- Input column -->
+        <div class="card">
+          <h2 class="card-title">Enter comment &amp; parameters</h2>
+
+          <label class="field-label" for="commentInput">Comment content</label>
+          <textarea id="commentInput" rows="4" placeholder="Type or paste a comment here (e.g. 'Great tutorial thanks!', or toxic text with leet-speak like 'k1ll all 1diots')..."></textarea>
+
+          <details class="advanced">
+            <summary>Advanced metadata &amp; platform signals</summary>
+            <div class="row">
+              <div class="field">
+                <label class="field-label" for="if1">Platform signal if_1</label>
+                <input id="if1" type="range" min="0" max="10" step="1" value="0" />
+                <span class="field-value" id="if1Val">0</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="if2">Platform signal if_2</label>
+                <input id="if2" type="range" min="0" max="15" step="1" value="5" />
+                <span class="field-value" id="if2Val">5</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label class="field-label" for="upvotes">Upvotes</label>
+                <input id="upvotes" type="number" value="0" min="0" />
+              </div>
+              <div class="field">
+                <label class="field-label" for="downvotes">Downvotes</label>
+                <input id="downvotes" type="number" value="0" min="0" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label class="field-label" for="race">Target race</label>
+                <select id="race">
+                  <option value="none">none</option>
+                  <option>White</option><option>Black</option><option>Asian</option><option>Hispanic</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label" for="religion">Target religion</label>
+                <select id="religion">
+                  <option value="none">none</option>
+                  <option>Christian</option><option>Muslim</option><option>Jewish</option><option>Hindu</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label" for="gender">Target gender</label>
+                <select id="gender">
+                  <option value="none">none</option>
+                  <option>Male</option><option>Female</option><option>Transgender</option>
+                </select>
+              </div>
+            </div>
+          </details>
+
+          <button id="analyzeBtn" class="btn-primary">Analyze comment safety</button>
+
+          <div class="preset-label">Quick test presets</div>
+          <div class="preset-row">
+            <button class="btn-preset" data-preset="normal">Normal</button>
+            <button class="btn-preset" data-preset="offensive">Offensive</button>
+            <button class="btn-preset" data-preset="hate">Hate speech</button>
+            <button class="btn-preset" data-preset="violent">Severe / violent</button>
+          </div>
+        </div>
+
+        <!-- Results column -->
+        <div class="results-col">
+          <div class="card hero-card" id="heroCard">
+            <div class="hero-label" id="heroLabel">—</div>
+            <div class="hero-confidence" id="heroConfidence">Submit a comment to analyze</div>
+            <span class="badge" id="riskBadge">Awaiting input</span>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">Class probability distribution</h2>
+            <div id="probBars" class="prob-bars"></div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">Linguistic &amp; vocabulary signals</h2>
+            <div class="row">
+              <div class="stat"><span class="stat-label">Sentiment score</span><span class="stat-value" id="sentimentVal">—</span></div>
+              <div class="stat"><span class="stat-label">Capitalisation ratio</span><span class="stat-value" id="capsVal">—</span></div>
+            </div>
+            <div id="termsOut" class="terms-out">No terms detected yet.</div>
+          </div>
+
+          <div class="card" id="explanationCard" style="display:none;">
+            <h2 class="card-title">Policy explanation</h2>
+            <span class="citation-badge" id="citationBadge"></span>
+            <p class="explanation-text" id="explanationText"></p>
+            <span class="source-tag" id="explanationSource"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Audit Log view (Phase C) ===================== -->
+    <section id="view-audit" class="view">
+      <div class="card"><p class="muted">Audit log coming in Phase C.</p></div>
+    </section>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
