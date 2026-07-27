@@ -11,6 +11,8 @@ data/
 *.txt.model
 models/
 checkpoints/
+# Exception: the trained artifact the Gradio app ships with (large, but needed for deployment)
+!app/comment_classifier_pipeline.joblib
 
 # Notebooks
 .ipynb_checkpoints/

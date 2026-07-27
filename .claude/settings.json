@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(python \"C:/Users/athar/AppData/Local/Temp/claude/c--Users-athar-Downloads-comment-class/f46cdcb1-61f4-4ca3-a08c-e3cf22fe531e/scratchpad/build_nb.py\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://raw.githubusercontent.com/torvalds/linux/master/README --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://raw.githubusercontent.com/t-davidson/hate-speech-and-offensive-language/master/data/labeled_data.csv\" --max-time 15)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/t-davidson/hate-speech-and-offensive-language/master/data/labeled_data.csv\" --max-time 20)",
+      "Bash(python -c \"import sklearn, lightgbm, scipy, pandas, numpy, joblib; print\\('ok'\\)\")",
+      "Bash(uv --version)",
+      "Bash(uv pip *)",
+      "Bash(.venv/Scripts/python.exe src/train_pipeline.py --sample-frac 0.15 --out app/comment_classifier_pipeline.joblib)",
+      "Bash(timeout 15 ../.venv/Scripts/python.exe -c ' *)",
+      "Bash(../.venv/Scripts/python.exe -c ' *)",
+      "Bash(.venv/Scripts/python.exe -c ' *)"
+    ]
+  }
+}
