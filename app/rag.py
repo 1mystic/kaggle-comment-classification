@@ -15,8 +15,13 @@ import os
 import re
 from pathlib import Path
 
+from dotenv import load_dotenv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+# Loads repo-root .env (if present) into os.environ. No-op if the file doesn't
+# exist, so this is safe with zero configuration.
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 POLICY_DIR = Path(__file__).resolve().parent / "policy"
 

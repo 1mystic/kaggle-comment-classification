@@ -9,12 +9,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY engine.py main.py rag.py agent.py audit.py monitoring.py comment_classifier_pipeline.joblib ./
-COPY static/ ./static/
-COPY policy/ ./policy/
+COPY app.py comment_classifier_pipeline.joblib ./
 
+ENV GRADIO_SERVER_NAME=0.0.0.0
 # Render (and most PaaS hosts) inject a dynamic $PORT at runtime; fall back to
-# 7860 for local `docker run` / platforms that don't set it.
+# 7860 for local `docker run` / platforms that don't set it (e.g. plain HF Docker Spaces).
 EXPOSE 7860
 
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-7860}"]
+CMD ["sh", "-c", "GRADIO_SERVER_PORT=${PORT:-7860} python app.py"]

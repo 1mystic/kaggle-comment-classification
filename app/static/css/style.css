@@ -185,3 +185,60 @@ input[type="range"] { width: 100%; }
 }
 .explanation-text { font-size: 14px; line-height: 1.6; color: var(--text); margin: 0 0 8px; }
 .source-tag { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+/* Agent card + appeal */
+.appeal-row { display: flex; gap: 8px; margin-top: 14px; }
+.appeal-row input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  background: var(--bg);
+}
+.btn-secondary {
+  border: 1px solid var(--accent);
+  background: var(--card);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-secondary:hover { background: var(--accent-soft); }
+.appeal-result { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+
+/* Audit Log view */
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 4px; }
+@media (max-width: 700px) { .stat-row { grid-template-columns: 1fr; } }
+.stat-card { display: flex; flex-direction: column; gap: 6px; }
+.stat-value-lg { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+
+.heatmap { display: grid; grid-template-columns: 40px repeat(24, 1fr); gap: 3px; font-size: 10px; color: var(--text-muted); }
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.heatmap-daylabel { display: flex; align-items: center; font-weight: 600; }
+
+.recent-list { display: flex; flex-direction: column; gap: 10px; }
+.recent-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 13px;
+}
+.recent-row .excerpt { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.recent-row .meta { color: var(--text-muted); font-size: 11px; white-space: nowrap; }
+
+.disclaimer { font-size: 12px; color: var(--text-muted); font-style: italic; margin: -6px 0 14px; }
+.dist-label { font-size: 11px; color: var(--text-muted); }
