@@ -5,6 +5,7 @@ Multi-class comment-toxicity classification on a severely imbalanced, obfuscated
 - **Competition:** [Comment Category Prediction Challenge](https://www.kaggle.com/competitions/comment-category-prediction-challenge/overview) (Kaggle, private community competition for IIT Madras students)
 - **Result:** Rank **21 / 2,744** participants (3,154 entrants), top **0.8%**, score **0.83499** (macro-F1-based custom metric)
 - **Stack:** scikit-learn (Logistic Regression, LinearSVC, ComplementNB), LightGBM, engineered features, no deep learning involved
+- **Live Demo:** [comment-classification-bs2t.onrender.com](https://comment-classification-bs2t.onrender.com)
 
 ![Leaderboard](assets/leaderboard.png)
 

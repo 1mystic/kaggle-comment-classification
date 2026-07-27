@@ -491,6 +491,12 @@ input[type="text"]:focus, textarea:focus {
     box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45) !important;
 }
 
+/* Hide Gradio's built-in top-right Settings/API toolbar chrome (not part of our layout;
+   our broad .block styling was giving it an empty dark-card look) */
+.settings, .settings-wrap, .settings-wrapper, .toolbar-wrap, .toolbar-wrap-wrap {
+    display: none !important;
+}
+
 /* Preset Buttons */
 .preset-btn {
     background: #0b1120 !important;
