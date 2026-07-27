@@ -17,10 +17,16 @@ See `HANDOFF.md` at the repo root for the full architecture writeup and why this
 ```bash
 cd app
 pip install -r requirements.txt
+
+# Optional: enables live Claude-generated explanations instead of the template
+# fallback. Skip this entirely and the app still works correctly.
+cp ../.env.example ../.env
+# edit ../.env, set ANTHROPIC_API_KEY=sk-ant-...
+
 uvicorn main:app --reload --port 8000
 ```
 
-Open `http://127.0.0.1:8000`.
+Open `http://127.0.0.1:8000`. `.env` (repo root) is auto-loaded via `python-dotenv` — no shell `export` needed, and it's gitignored so it never gets committed.
 
 ## Module map
 

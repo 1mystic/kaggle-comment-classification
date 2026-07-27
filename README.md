@@ -120,23 +120,41 @@ This was a **private, competition-only Kaggle notebook** (course-hosted communit
 - [`Notebook-main.ipynb`](Notebook-main.ipynb): a reconstructed copy of my approach, written after the fact. This is not the notebook I actually submitted to the competition, but a recreated version of it
 - Leaderboard/result screenshots as evidence of the outcome, not the process
 
-## Deployment & Interactive Web UI Dashboard
+## Deployment & Interactive Web Platform (v2)
 
 - **Production Training Notebook:** [`app/deployment_training_fast.ipynb`](app/deployment_training_fast.ipynb)
-  Kaggle notebook containing the exact 7-model stacked ensemble pipeline, feature engineering, vectorization, meta-learner, and threshold multipliers, tuned to fit Kaggle's CPU time limit. Each base learner's `N_FOLDS` cross-validation copies are kept and bagged (averaged) at inference time instead of doing a separate full-data refit. When executed on Kaggle, it exports all fitted fold models to a compressed `comment_classifier_pipeline.joblib` artifact matching the schema `app/app.py` expects.
-- **Hugging Face Space Web App:** [`app/app.py`](app/app.py)
-  Interactive real-time Comment Toxicity & Category Intelligence Dashboard built with Gradio. Features live classification, class probability progress gauges, linguistic token signals (leet-speak decodings, violent/negative lexicons), sentiment balance scores, and test sample presets. Runs in a heuristic "Demonstration Preview Mode" until `comment_classifier_pipeline.joblib` is placed alongside it.
+  Kaggle notebook containing the exact 7-model stacked ensemble pipeline, feature engineering, vectorization, meta-learner, and threshold multipliers, tuned to fit Kaggle's CPU time limit. Each base learner's `N_FOLDS` cross-validation copies are kept and bagged (averaged) at inference time instead of doing a separate full-data refit. When executed on Kaggle, it exports all fitted fold models to a compressed `comment_classifier_pipeline.joblib` artifact matching the schema `app/engine.py` expects.
+- **Live app:** [`app/main.py`](app/main.py) — a FastAPI backend + custom HTML/CSS/JS dashboard (no Gradio) that turns the classifier into an explainable, auditable moderation platform:
+  - Real-time classification via the same trained model, same feature pipeline.
+  - **RAG-grounded explanations** — every flagged comment cites a retrieved policy clause (TF-IDF over a local corpus covering India's IT Rules 2021 + an authored community-guidelines doc), with a Claude-generated explanation when `ANTHROPIC_API_KEY` is set, or a deterministic template otherwise — the demo works with zero secrets.
+  - **Agent escalation** — a small LangGraph workflow (`app/agent.py`) routes each decision to auto-action / human review / auto-clear, with an appeal path.
+  - **Audit trail** — every decision logged to SQLite (`app/audit.py`).
+  - **Model health / drift monitoring** (`app/monitoring.py`) — predicted-class distribution drift vs. this README's documented validation-set baseline (Population Stability Index), average confidence, appeal rate. Explicitly a proxy signal set, not a live F1 score — there's no ground truth for live traffic.
+  - See [`app/README.md`](app/README.md) for the full module map and how to run it locally.
+- **Archived v1:** [`app/old_archive/gradio_app/`](app/old_archive/gradio_app/) — the original Gradio dashboard, preserved as a fully self-contained, independently deployable unit (its own `Dockerfile`, `requirements.txt`, and a copy of the trained model artifact) if you want the minimal classical-ML demo without the v2 layers.
+
+### Running locally
 
 ```bash
-# Run Web UI locally
 cd app
 pip install -r requirements.txt
-python app.py
+
+# Optional — only needed for live Claude-generated explanations. Without this,
+# the app falls back to a deterministic template automatically, no error, no
+# missing feature — it's a fully valid default, not a degraded one.
+cp ../.env.example ../.env
+# then edit ../.env and set ANTHROPIC_API_KEY=sk-ant-...
+
+uvicorn main:app --reload --port 8000
 ```
+
+Open `http://127.0.0.1:8000`. The `.env` file (repo root, alongside `.env.example`) is auto-loaded via `python-dotenv` — no need to export the variable in your shell. It's gitignored, so it never gets committed.
+
+To run the **archived v1 Gradio version** instead, see [`app/old_archive/gradio_app/README.md`](app/old_archive/gradio_app/README.md).
 
 ## Stack
 
-`numpy` · `pandas` · `scikit-learn` · `lightgbm` · `joblib` · `gradio`
+`numpy` · `pandas` · `scikit-learn` · `lightgbm` · `joblib` · `fastapi` · `langgraph` · `anthropic`
 
 See [requirements.txt](requirements.txt) and [app/requirements.txt](app/requirements.txt).
 

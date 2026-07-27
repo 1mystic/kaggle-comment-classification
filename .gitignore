@@ -11,11 +11,19 @@ data/
 *.txt.model
 models/
 checkpoints/
-# Exception: the trained artifact the Gradio app ships with (large, but needed for deployment)
+# Exception: the trained artifacts the app and its archived Gradio v1 ship with
+# (large, but needed for deployment).
 !app/comment_classifier_pipeline.joblib
+!app/old_archive/gradio_app/comment_classifier_pipeline.joblib
 
 # Notebooks
 .ipynb_checkpoints/
+
+# Runtime data (audit trail is ephemeral by design — see HANDOFF.md)
+*.db
+.env
+.env.*
+!.env.example
 
 # Python
 __pycache__/

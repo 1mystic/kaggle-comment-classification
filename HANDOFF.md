@@ -5,90 +5,64 @@ Self-contained context doc for any AI agent (or human) picking up this project i
 ## Standing rules (do not violate)
 
 1. **Never run git commands on this repo yourself.** Give the user the exact commands to run in their own terminal and wait for them to paste back output. This applies even to routine things (`git add`, `git commit`, `git push`) unless the user explicitly says otherwise in a given moment.
-2. **Never add a `Co-Authored-By: Claude` (or any AI) trailer to commit messages, and never add a "Generated with Claude Code" line to commits or PRs.** The user's org does not allow AI co-authorship attribution. If you're using a harness that adds this automatically, disable it or strip it before ever suggesting a commit message.
-   - Context: an earlier commit (`e9e9fcb...`, now rewritten) carried this trailer. It took a multi-step `git rebase -i` + amend + force-push to remove it — see git log for the real history. It's fixed; don't reintroduce it.
-3. **No Docker build/run verification** for this project going forward — the user asked to stop doing local Docker checks. Verify with local `uvicorn`/Python only.
+2. **Never add a `Co-Authored-By: Claude` (or any AI) trailer to commit messages, and never add a "Generated with Claude Code" line to commits or PRs.** The user's org does not allow AI co-authorship attribution.
+3. **No Docker build/run verification** for this project — the user asked to stop doing local Docker checks. Verify with local `uvicorn`/Python only. (Memory-budget checks can still be done with plain Python + `psutil`, that's fine — just not `docker build`/`docker run`.)
 4. User is on **Windows, PowerShell**. Watch for native-command quoting gotchas — PowerShell mangles nested double-quotes when passing arguments to `git.exe` and other native exes. Prefer single-line commands, or temp script files with absolute paths, over inline multi-line quoting.
-5. `.claude/` is gitignored and untracked at the user's request (local Claude Code config, not project content) — don't re-track it.
-6. Keep this file (`HANDOFF.md`) updated as phases complete or context shifts — this is the source of truth for "what's going on," not the conversation history.
+5. `.claude/` is gitignored and untracked at the user's request — don't re-track it.
+6. Keep this file updated as phases complete or context shifts.
 
 ## What this project is
 
-`comment-class`: a 4-class comment-toxicity classifier (Normal / Offensive / Hate Speech / Severe-Violent) that placed 21st/2,744 (top 0.8%, macro-F1 ≈0.835) in a private Kaggle competition (IIT Madras community competition). Classical ML stack — no deep learning: a 7-model stacked ensemble (LightGBM + Logistic Regression + NB-SVM + LinearSVC) trained via the Kaggle notebook `app/deployment_training_fast.ipynb`, exported as `app/comment_classifier_pipeline.joblib`.
+`comment-class`: a 4-class comment-toxicity classifier (Normal / Offensive / Hate Speech / Severe-Violent), 21st/2,744 in a private Kaggle competition (macro-F1 ≈0.835). Classical ML — 7-model stacked ensemble (LightGBM + Logistic Regression + NB-SVM + LinearSVC), trained via `app/deployment_training_fast.ipynb`, exported as `comment_classifier_pipeline.joblib`.
 
-Originally this was "just" a Kaggle writeup repo. It's being upgraded into a portfolio-grade, deployed, explainable moderation platform — see "v2 plan" below for why and what.
+Upgraded from "a Kaggle writeup" into a deployed, explainable moderation **platform** — see "v2" below.
 
-## Current deployment status (v1 — LIVE)
+## Current deployment status
 
-**Live URL:** `https://comment-classification-bs2t.onrender.com`
+**Live URL:** `https://comment-classification-bs2t.onrender.com` — as of this writing still serving **v1 (Gradio)**; v2 is built and locally verified but **not yet pushed/deployed** (see "What's left" below).
 
-- Hosted on **Render** (free tier, 512MB RAM), deployed via a `Dockerfile` in `app/` that binds to Render's dynamic `$PORT` env var.
-- The deployed app is currently `app/app.py` — a **Gradio** dashboard. This will be replaced by the v2 FastAPI + custom-UI stack (in progress, see below), but as of now Gradio is still what's live.
-- The model artifact (`app/comment_classifier_pipeline.joblib`) is the **real** Kaggle-trained model, trimmed to a single fold (from 3-fold bagging) specifically to fit Render's 512MB cap — full 3-fold version used ~520MB and OOM'd; trimmed version uses ~287MB. This trimming was verified to not meaningfully hurt prediction quality.
-- Getting here took real debugging: HF Spaces was tried first and abandoned (Python-version/sklearn-pin build failures, then a ZeroGPU hardware requirement neither Gradio nor Docker SDK could avoid without a paid plan) — Render was the fallback that worked. Full history is in the conversation/commit log if needed; not repeated here since it's resolved.
-- Deployment is git-push-triggered on Render's side — pushing to `main` (or whatever branch Render is watching) redeploys automatically.
+- Hosted on Render (free tier, 512MB RAM), via a Dockerfile in `app/`.
+- Getting a real model onto Render took real debugging (HF Spaces tried and abandoned — Python-version/sklearn-pin build failures, then a ZeroGPU hardware requirement neither Gradio nor Docker SDK could avoid without a paid plan). Render + a memory-trimmed model artifact (single fold instead of 3-fold bagging, ~287MB vs ~520MB) is what's live.
+- Git history confirmed clean of AI co-author trailers (`git log --all --oneline | grep Co-Authored-By` returns empty).
 
-**Everything is currently clean**: git history has no AI co-author trailers anywhere (verified via `git log --all --oneline | grep Co-Authored-By` returning empty), local `main` matches `origin/main`, no uncommitted changes except the new v2 files being built (untracked, see below).
+## v2 — DONE (this session), not yet deployed
 
-## v2 plan — why and what
+**Why:** Gradio's built-in chrome fights custom design, and the user wants a portfolio-grade UI. This also unblocks the "explainable, auditable moderation platform" angle (RAG + agent + audit) that hits the specific skills 2026 India AI/ML fresher/associate job postings screen for.
 
-**Why:** Two things converged. (1) Fixing a cosmetic bug in the Gradio UI (an empty box from Gradio's built-in Settings/API toolbar) surfaced that Gradio's chrome fights any real custom design, and the user wants a genuinely well-built portfolio UI — feasible now that deployment is a plain Dockerfile on Render, not HF Spaces' managed Gradio SDK. (2) This unblocks turning the project from "a toxicity classifier" into an **explainable, auditable moderation platform** — RAG policy-grounding + agent escalation + audit trail — which hits the specific skills 2026 India AI/ML fresher/associate job postings screen for (RAG, agents, LLM integration, a real deployed service) far better than a Kaggle-writeup Gradio demo does.
+**What was built — all verified locally working end-to-end via real HTTP requests (not just unit-level):**
 
-**Full plan doc:** `C:\Users\athar\.claude\plans\yea-but-this-as-giggly-alpaca.md` (on the machine that has it — if unavailable, this section is the authoritative summary).
+1. **`app/engine.py`** — inference logic (text cleaning, feature engineering, model loading, bagged-fold prediction), lifted from the old `app/app.py`, Gradio-free. Gotcha handled: the model artifact was pickled from a Kaggle notebook where `NBTransformer` lived in `__main__`; `engine.py` patches `sys.modules['__main__'].NBTransformer` so unpickling works regardless of who imports it.
+2. **`app/rag.py`** — TF-IDF retrieval (scikit-learn, no new heavy dependency) over `app/policy/*.md` (IT Rules 2021 excerpt + authored community guidelines). Explanation generation: Claude API (`claude-opus-5`) if `ANTHROPIC_API_KEY` is set, else a deterministic template. Verified both the retrieval-picks-the-right-section behavior and the template fallback path end-to-end; the LLM path is implemented but untested in this environment (no API key available here) — code gracefully falls back if `anthropic` import fails or no key is set.
+3. **`app/agent.py`** — LangGraph state graph: `assess_risk` → conditional routing → `auto_action` / `human_review` / `auto_clear`, all logged to the audit trail. Plus `agent.appeal(decision_id, reason)` — re-runs classification+RAG, logs a new linked decision (`appeal_of` FK), doesn't overwrite the original (audit trail stays immutable).
+4. **`app/audit.py`** — SQLite (stdlib, zero new dependency) at `app/audit.db` (gitignored, `*.db`). Functions: `log_decision`, `get_decision`, `update_decision`, `get_recent`, `get_stats`, `get_label_distribution`, `get_appeal_counts`, `get_activity_heatmap`. **Deliberately kept as local SQLite, not migrated to a cloud DB (Neon/Turso considered and explicitly declined)** — user confirmed the Render-redeploy reset behavior is an acceptable, disclosed demo limitation.
+5. **`app/monitoring.py`** — model-health/drift proxy signals: Population Stability Index (predicted-class distribution vs. the README-documented validation baseline `{Normal: 0.50, Offensive: 0.072, Hate Speech: 0.40, Severe/Violent: 0.028}`), average confidence, appeal rate. **Explicitly not a live F1 score** — there's no ground truth for live traffic, and the code/UI/README all say so. Thresholds: PSI <0.10 healthy, 0.10–0.25 watch, ≥0.25 drift_detected (standard MLOps convention).
+6. **`app/main.py`** — FastAPI app: `POST /api/analyze` (predict + explain + route + log), `POST /api/appeal/{id}`, `GET /api/audit`, `GET /api/monitoring`, `GET /api/health`, serves `static/`.
+7. **`app/static/`** — light theme (per user's reference image), card-based, top nav with **Moderate** and **Audit Log** tabs. Moderate view: form + hero result + probability bars + linguistic signals + policy-explanation card + agent-status chip + appeal box. Audit Log view: stat-card row + model-health panel (drift badge, distribution-vs-baseline bars) + activity heatmap (CSS grid, day×hour) + recent-decisions list. No external chart-library CDN — hand-rolled SVG/CSS.
+8. **`app/old_archive/gradio_app/`** — the v1 Gradio app archived as a **fully self-contained, independently deployable unit**: its own `app.py`, `requirements.txt`, `Dockerfile`, a **copy** of the trained model artifact, and its own `README.md` with run/deploy instructions. Verified it boots and loads the real model correctly from this location on its own (ran it as `python app.py` from inside that folder — "Full Stacked Ensemble Active").
+9. **Memory check (plain Python + `psutil`, not Docker):** full v2 stack (engine + rag + agent + audit + monitoring + fastapi + langgraph + anthropic client) uses ~340MB RSS, vs. ~287MB for v1 alone — still comfortably under Render's 512MB cap (~172MB headroom).
+10. **Cleanup done:** `app/Dockerfile` now runs `uvicorn main:app` (was `python app.py`); `app/requirements.txt` swapped `gradio` for `fastapi`/`uvicorn[standard]`/`anthropic`/`langgraph`; root `README.md` and `app/README.md` rewritten for v2; `.gitignore` updated (`*.db`, `.env*`, exception for the archived joblib copy); added `.env.example`.
 
-**Design direction:** Light theme (per user's reference image: a cream/white crypto-portfolio dashboard with stat cards, donut charts, an area chart), with structural patterns borrowed from a second reference (a dark fintech dashboard called "Loud" — activity heatmap, stat-row layout, top nav) recolored for the light palette. Indigo/purple accent, consistent with the old Gradio brand.
+## What's left / next steps
 
-**Hard constraint:** Render free tier = 512MB RAM, and the classifier alone already uses ~287MB. Every new v2 dependency must avoid heavy ML libraries — no `sentence-transformers`, no `torch`, no vector-DB server. RAG retrieval uses **TF-IDF** (already an `sklearn` dependency, no new install). The LLM explanation layer is a **network call** to the Anthropic API (`claude-opus-5`), not a locally-loaded model — zero local memory cost — with a deterministic template fallback when no `ANTHROPIC_API_KEY` is configured, so the public demo works with zero secrets.
-
-**Architecture — replace Gradio with FastAPI + hand-built HTML/CSS/JS, add three layers on top of the existing (proven) classifier:**
-
-1. **`app/engine.py`** — inference logic (text cleaning, feature engineering, model loading, bagged-fold prediction) lifted out of `app/app.py`, Gradio-free. Single source of truth for the FastAPI server.
-2. **`app/rag.py`** — small curated policy corpus (IT Rules 2021 intermediary-guidelines excerpt + an authored platform community-guidelines doc, local markdown files), TF-IDF-retrieved against the flagged comment. Explanation generator: Claude API call if a key is set, else a template built from the retrieved clause + lexicon signals `engine.py` already computes.
-3. **`app/agent.py`** — a small **LangGraph** state graph (pure Python, negligible memory): `classify → decide → {auto_action | human_review | auto_clear}`, plus an `appeal` path that re-runs classification+RAG with the user's appeal context. LangGraph specifically (not a hand-rolled if/else) because it's the concrete "agent orchestration" artifact recruiters look for, and it's light enough for the memory budget.
-4. **`app/audit.py`** — SQLite (stdlib `sqlite3`, zero new dependency) logging every decision. **Disclosed limitation:** Render free-tier disk is ephemeral, resets on redeploy/restart — fine and disclosed for a demo, not a claim of production data retention.
-5. **`app/main.py`** — FastAPI app serving the static frontend + REST endpoints: `POST /api/analyze`, `POST /api/appeal/{id}`, `GET /api/audit`, `GET /api/health`.
-6. **`app/static/`** — the new custom UI: `index.html`, `css/style.css`, `js/app.js`. Light theme, card-based, top nav with **Moderate** and **Audit Log** views, hand-rolled SVG/CSS charts (no external chart-library CDN — keeps the page self-contained).
-
-`app/app.py` (Gradio) moves to `app/old_archive/app_gradio.py` at the end — kept for history, not deployed. `Dockerfile` CMD switches from `python app.py` to `uvicorn main:app --host 0.0.0.0 --port ${PORT:-7860}`.
-
-### Phases
-
-- **Phase A — Backend + UI shell.** `engine.py` + `main.py` + static shell, Moderate view working end-to-end with real predictions, no RAG/agent yet.
-- **Phase B — RAG policy grounding.** `rag.py` + policy corpus, explanation card wired into the Moderate view.
-- **Phase C — Agent escalation + audit.** `agent.py` (LangGraph) + `audit.py` (SQLite), Audit Log view (stat cards, heatmap, recent-decisions list).
-- **Phase D — Cleanup & redeploy prep.** Archive Gradio app, update `Dockerfile`/`requirements.txt`/READMEs, verify locally, hand back to user for GitHub push + Render redeploy.
-
-## Phase status (detailed)
-
-- [x] **Phase A — in progress, nearly done:**
-  - [x] `app/engine.py` — done, verified standalone (loads real model, predictions match previously-verified values exactly: Severe/Violent 97.4%, Normal 99.9%, Hate Speech 46.2%). Gotcha handled: the model artifact was pickled from a Kaggle notebook where `NBTransformer` lived in `__main__`, so `engine.py` patches `sys.modules['__main__'].NBTransformer` so unpickling works regardless of who imports it.
-  - [x] `app/main.py` — done (Phase A scope: `/api/analyze`, `/api/health`, static file serving).
-  - [x] `app/static/index.html` — done (Moderate view: form + hero result + prob bars + linguistic signals; Audit Log view is a stub for now).
-  - [x] `app/static/css/style.css` — done (light theme design system).
-  - [x] `app/static/js/app.js` — done (tabs, sliders, presets, fetch → render).
-  - [ ] **Next: local verification** — `uvicorn app.main:app --reload` from the `app/` directory, then exercise `/api/analyze` via curl and the browser UI for the 4 preset cases (Normal/Offensive/Hate Speech/Severe-Violent), confirm predictions match v1's already-verified values.
-- [ ] **Phase B:** not started.
-- [ ] **Phase C:** not started.
-- [ ] **Phase D:** not started.
+- **Nothing left to build for this pass.** Everything above is implemented and verified locally.
+- **Not yet committed or pushed.** Per the "never run git commands" rule, the user needs to run the commit/push themselves — exact commands were provided in the conversation (see the final assistant message of this session, or re-derive: `git add` the new/modified files, commit, push to `main`; Render should auto-redeploy from there).
+- **Open question flagged to user, unresolved as of this doc's last update:** `Competition.png` and `Leaderboard.png` (root-level duplicates of `assets/leaderboard.png` / `assets/competition-overview.png`) show as deleted from the working directory in `git status`, but this wasn't something done intentionally in this session's visible actions. The canonical copies under `assets/` are untouched and that's what `README.md` actually links to, so no content was lost — but confirm with the user whether to include this deletion in the commit or restore the files before committing.
+- **Once deployed:** confirm on the live Render URL that `/api/health` shows the real model active, run through the same 4 preset cases in the browser, and spot-check that `ANTHROPIC_API_KEY` is (or isn't, deliberately) set on Render depending on whether the user wants live Claude explanations vs. the template fallback in production.
 
 ## Key file map
 
 ```
 app/
-  engine.py          # inference: clean_text, build_features, model load, predict() — DONE
-  main.py            # FastAPI app — DONE (Phase A endpoints only so far)
-  rag.py             # NOT YET BUILT (Phase B)
-  agent.py           # NOT YET BUILT (Phase C)
-  audit.py           # NOT YET BUILT (Phase C)
-  static/
-    index.html       # DONE (Moderate view; Audit Log stub)
-    css/style.css    # DONE
-    js/app.js        # DONE
-  policy/            # NOT YET BUILT (Phase B) — it_rules_2021.md, community_guidelines.md
-  comment_classifier_pipeline.joblib   # real trained artifact, already present, DO NOT retrain
-  app.py             # current Gradio app — STILL THE DEPLOYED ENTRYPOINT until Phase D archives it
-  requirements.txt   # still Gradio-era; Phase D updates this
-Dockerfile           # still `CMD python app.py`; Phase D switches to uvicorn
+  engine.py, main.py, rag.py, agent.py, audit.py, monitoring.py   # all DONE, verified
+  static/{index.html, css/style.css, js/app.js}                  # DONE
+  policy/{it_rules_2021.md, community_guidelines.md}              # DONE
+  comment_classifier_pipeline.joblib                              # real trained artifact, DO NOT retrain
+  requirements.txt                                                # DONE (v2 deps)
+  Dockerfile                                                       # DONE (uvicorn CMD)
+  old_archive/gradio_app/                                          # DONE — self-contained v1, verified working standalone
+    app.py, requirements.txt, Dockerfile, comment_classifier_pipeline.joblib, README.md
+README.md, app/README.md                                          # DONE (rewritten for v2)
+.gitignore, .env.example                                          # DONE
 ```
 
-All the new v2 files above (`engine.py`, `main.py`, `static/`) are currently **untracked** in git — not yet committed. The user has not been asked to commit/push v2 work yet; that happens at the end of Phase D per the "no git commands from me" rule (I hand over exact commands).
+All new/modified v2 files are currently **uncommitted** (untracked or modified in git status) — nothing has been pushed yet.
