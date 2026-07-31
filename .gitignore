@@ -4,6 +4,9 @@ data/
 *.parquet
 *.json.gz
 
+
+INTERVIEW_PREP.md
+
 # Model artifacts
 *.pkl
 *.joblib

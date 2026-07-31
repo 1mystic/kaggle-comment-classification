@@ -19,13 +19,16 @@ import math
 
 import audit
 
-# From the root README's documented validation-set class shares (Normal ~50%,
-# Hate Speech ~40%, Severe/Violent ~2.8%; Offensive is the remainder).
+# Actual training-set class shares, measured on all 198,000 training rows
+# (Notebook-main.ipynb, `label.value_counts(normalize=True)`) and documented in
+# the root README. An earlier version of this baseline was copied from a
+# now-corrected README table and was wrong (0.50/0.072/0.40/0.028), which made
+# every PSI reading below meaningless - the numbers here are the measured ones.
 BASELINE_DISTRIBUTION = {
-    "Normal": 0.50,
-    "Offensive": 0.072,
-    "Hate Speech": 0.40,
-    "Severe/Violent": 0.028,
+    "Normal": 0.5766,
+    "Offensive": 0.0804,
+    "Hate Speech": 0.3154,
+    "Severe/Violent": 0.0276,
 }
 
 PSI_WATCH_THRESHOLD = 0.10
